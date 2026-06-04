@@ -1,0 +1,67 @@
+version: 2
+
+project_name: dockersec
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: .
+    binary: dockersec
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      # bake version info into the binary at build time
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - formats:
+      - tar.gz
+    # windows gets a zip, everything else gets tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+      - rules/**/*
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^chore:"
+      - "^test:"
+  groups:
+    - title: "New Rules"
+      regexp: "^feat.*rule.*"
+      order: 0
+    - title: "Features"
+      regexp: "^feat"
+      order: 1
+    - title: "Bug Fixes"
+      regexp: "^fix"
+      order: 2
+
+release:
+  github:
+    owner: Deepak-coder80
+    name: dockersec
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"

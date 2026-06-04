@@ -17,6 +17,7 @@ import (
 )
 
 var outputFormat string
+var failOn string
 
 var scanCmd = &cobra.Command{
 	Use:   "scan [path]",
@@ -28,6 +29,7 @@ var scanCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(scanCmd)
 	scanCmd.Flags().StringVarP(&outputFormat, "format", "f", "text", "Output format: text or table")
+	scanCmd.Flags().StringVar(&failOn, "fail-on", "", "Exit with code 1 if findings at this severity or above exist (CRITICAL, HIGH, MEDIUM, LOW)")
 }
 
 func runScan(cmd *cobra.Command, args []string) {
@@ -79,4 +81,32 @@ func runScan(cmd *cobra.Command, args []string) {
 	default:
 		report.PrintFindings(allFindings)
 	}
+
+	if failOn != "" {
+		if shouldFail(allFindings, models.Severity(failOn)) {
+			os.Exit(1)
+		}
+	}
+}
+
+func shouldFail(findings []models.Finding, threshold models.Severity) bool {
+	order := map[models.Severity]int{
+		models.SeverityCritical: 0,
+		models.SeverityHigh:     1,
+		models.SeverityMedium:   2,
+		models.SeverityLow:      3,
+	}
+
+	thresholdLevel, ok := order[threshold]
+	if !ok {
+		fmt.Fprintf(os.Stderr, "Invalid severity: %s. Use CRITICAL, HIGH, MEDIUM or LOW\n", threshold)
+		os.Exit(1)
+	}
+
+	for _, f := range findings {
+		if order[f.Severity] <= thresholdLevel {
+			return true
+		}
+	}
+	return false
 }

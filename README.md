@@ -104,7 +104,7 @@ jobs:
             -o dockersec && chmod +x dockersec && sudo mv dockersec /usr/local/bin/
 
       - name: Scan Dockerfile and docker-compose
-        run: dockersec scan .
+        run: dockersec scan . --fail-on HIGH
 ```
 
 ---
