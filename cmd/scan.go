@@ -10,9 +10,10 @@ import (
 	"github.com/Deepak-coder80/dockersec/internal/rules"
 	"github.com/spf13/cobra"
 
-	// blank imports trigger each rule's init() so they self-register
 	_ "github.com/Deepak-coder80/dockersec/internal/rules/dockerfile"
 )
+
+var outputFormat string
 
 var scanCmd = &cobra.Command{
 	Use:   "scan [path]",
@@ -23,6 +24,8 @@ var scanCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
+	// register the --format flag with "text" as default
+	scanCmd.Flags().StringVarP(&outputFormat, "format", "f", "text", "Output format: text or table")
 }
 
 func runScan(cmd *cobra.Command, args []string) {
@@ -36,5 +39,11 @@ func runScan(cmd *cobra.Command, args []string) {
 	}
 
 	findings := rules.RunDockerfileRules(parsed)
-	report.PrintFindings(findings)
+
+	switch outputFormat {
+	case "table":
+		report.PrintTable(findings)
+	default:
+		report.PrintFindings(findings)
+	}
 }

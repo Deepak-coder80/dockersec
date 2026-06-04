@@ -16,14 +16,19 @@ func checkRootUser(df *parser.ParsedDockerfile) []models.Finding {
 	if df.FindInstruction("USER") == nil {
 		return []models.Finding{
 			{
-				RuleID:      "DF001",
-				Severity:    models.SeverityHigh,
-				Description: "Container runs as root. No USER instruction found.",
-				Line:        1,
-				Fix:         "Add 'USER nonroot' before your CMD or ENTRYPOINT.",
+				RuleID:   "DF001",
+				Severity: models.SeverityHigh,
+				Description: "No USER instruction found. Container will run as root. " +
+					"Root inside a container maps directly to root on the host kernel. " +
+					"If an attacker exploits your application and breaks out of the container, " +
+					"they have full root access to the host machine. " +
+					"This is one of the most common and critical Docker misconfigurations in production.",
+				Line: 1,
+				Fix: "Add a non-root user and switch to it before your final CMD or ENTRYPOINT. Example:\n" +
+					"  RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser\n" +
+					"  USER appuser",
 			},
 		}
 	}
 	return nil
 }
-

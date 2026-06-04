@@ -22,11 +22,16 @@ func checkLatestTag(df *parser.ParsedDockerfile) []models.Finding {
 		// no tag at all defaults to latest
 		if !strings.Contains(image, ":") || strings.HasSuffix(image, ":latest") {
 			findings = append(findings, models.Finding{
-				RuleID:      "DF002",
-				Severity:    models.SeverityHigh,
-				Description: "Base image uses 'latest' tag: " + image,
-				Line:        inst.Line,
-				Fix:         "Pin to a specific version e.g. node:20.11-alpine3.19",
+				RuleID:   "DF002",
+				Severity: models.SeverityHigh,
+				Description: "Base image uses 'latest' tag: " + image + ". " +
+					"The 'latest' tag is not a version. It points to whatever the image maintainer " +
+					"last pushed to that name. Your build today and your build next week can produce " +
+					"completely different images silently. This breaks reproducibility and makes " +
+					"debugging production incidents much harder.",
+				Line: inst.Line,
+				Fix: "Pin to a specific version and use a minimal base image. Example: node:20.11-alpine3.19\n" +
+					"For maximum reproducibility, also pin by digest: node:20.11-alpine3.19@sha256:abc123...",
 			})
 		}
 	}
