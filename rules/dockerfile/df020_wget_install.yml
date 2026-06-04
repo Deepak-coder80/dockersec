@@ -1,0 +1,17 @@
+id: DF020
+type: dockerfile
+severity: MEDIUM
+description: |
+  wget used to download and execute a file directly. Downloading binaries or scripts
+  without verifying their checksum means you cannot guarantee what you are running.
+  A compromised download server or a man-in-the-middle attack can replace the file
+  with malicious code silently.
+fix: |
+  Download the file, verify its SHA256 checksum, then execute it.
+  Example:
+    RUN wget https://example.com/binary -O /tmp/binary \
+      && echo "expectedchecksum /tmp/binary" | sha256sum -c \
+      && chmod +x /tmp/binary
+match:
+  instruction: RUN
+  contains: "wget"

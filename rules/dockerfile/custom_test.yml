@@ -1,0 +1,13 @@
+id: CUSTOM001
+type: dockerfile
+severity: MEDIUM
+description: |
+  nc (netcat) found in a RUN instruction. Netcat is a powerful networking tool
+  that attackers use to create backdoors and exfiltrate data.
+  It has no place in a production image.
+fix: |
+  Remove netcat from your image. If you need network debugging,
+  use a dedicated debug container at runtime instead.
+match:
+  instruction: RUN
+  contains: "nc"

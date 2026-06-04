@@ -8,5 +8,8 @@ RUN pip install flask
 ADD . /app
 COPY package.json /app
 WORKDIR /app
+RUN apt-get install nc
 EXPOSE 80
 CMD ["node", "index.js"]
+RUN chmod 777 /app
+RUN wget https://example.com/script.sh

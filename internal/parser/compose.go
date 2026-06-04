@@ -17,6 +17,7 @@ type ComposeService struct {
 	Image       string         `yaml:"image"`
 	Privileged  bool           `yaml:"privileged"`
 	NetworkMode string         `yaml:"network_mode"`
+	Restart     string         `yaml:"restart"`
 	Environment ComposeEnv     `yaml:"environment"`
 	Volumes     []string       `yaml:"volumes"`
 	Ports       []string       `yaml:"ports"`

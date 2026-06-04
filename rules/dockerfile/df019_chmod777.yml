@@ -1,0 +1,14 @@
+id: DF019
+type: dockerfile
+severity: HIGH
+description: |
+  chmod 777 grants read, write and execute permission to every user on the system.
+  In a container this means any process, including a compromised one, can modify
+  any file with this permission. This is a common attack vector for privilege escalation.
+fix: |
+  Use specific permissions instead.
+  chmod 755 for executables, chmod 644 for config files.
+  Example: RUN chmod 755 /app/entrypoint.sh
+match:
+  instruction: RUN
+  contains: "chmod 777"

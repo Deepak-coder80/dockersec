@@ -9,6 +9,7 @@ import (
 	"github.com/Deepak-coder80/dockersec/internal/parser"
 	"github.com/Deepak-coder80/dockersec/internal/report"
 	"github.com/Deepak-coder80/dockersec/internal/rules"
+	yamlrules "github.com/Deepak-coder80/dockersec/internal/rules/yaml"
 	"github.com/spf13/cobra"
 
 	_ "github.com/Deepak-coder80/dockersec/internal/rules/compose"
@@ -28,8 +29,18 @@ func init() {
 	rootCmd.AddCommand(scanCmd)
 	scanCmd.Flags().StringVarP(&outputFormat, "format", "f", "text", "Output format: text or table")
 }
+
 func runScan(cmd *cobra.Command, args []string) {
 	path := args[0]
+
+	// load YAML rules from built-in rules directory and user-defined rules
+	// missing directories are silently skipped
+	for _, rulesDir := range []string{"rules/dockerfile", "rules/compose"} {
+		if err := yamlrules.LoadRulesFromDir(rulesDir); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: could not load rules from %s: %s\n", rulesDir, err)
+		}
+	}
+
 	var allFindings []models.Finding
 
 	dockerfilePath := filepath.Join(path, "Dockerfile")

@@ -19,3 +19,6 @@ services:
     environment:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_USER: admin
+  cache:
+    image: redis:7.2
+    restart: always

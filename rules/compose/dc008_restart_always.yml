@@ -1,0 +1,20 @@
+id: DC008
+type: compose
+severity: MEDIUM
+description: |
+  Service uses restart: always without resource limits defined.
+  A service that crashes repeatedly will restart indefinitely.
+  Without resource limits this can consume all available CPU and memory
+  on the host, causing other services to fail.
+fix: |
+  Combine restart policy with resource limits.
+  Example:
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+match:
+  field: restart
+  equals: "always"
