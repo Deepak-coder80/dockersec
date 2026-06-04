@@ -23,3 +23,20 @@ func RunDockerfileRules(df *parser.ParsedDockerfile) []models.Finding {
 	}
 	return findings
 }
+
+// RuleComposeFunc is the signature every compose rule must follow
+type RuleComposeFunc func(cf *parser.ComposeFile) []models.Finding
+
+var composeRules []RuleComposeFunc
+
+func RegisterComposeRule(r RuleComposeFunc) {
+	composeRules = append(composeRules, r)
+}
+
+func RunComposeRules(cf *parser.ComposeFile) []models.Finding {
+	var findings []models.Finding
+	for _, rule := range composeRules {
+		findings = append(findings, rule(cf)...)
+	}
+	return findings
+}

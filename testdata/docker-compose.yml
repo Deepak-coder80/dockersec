@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  web:
+    image: node:latest
+    privileged: true
+    network_mode: host
+    ports:
+      - "22:22"
+      - "3000:3000"
+    environment:
+      - API_SECRET=supersecret123
+      - NODE_ENV=production
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: admin

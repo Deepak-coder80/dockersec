@@ -17,4 +17,5 @@ type Finding struct {
 	Line        int
 	Instruction string
 	Fix         string
+	Source      string
 }
