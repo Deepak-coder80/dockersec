@@ -1,5 +1,7 @@
 # dockersec
 
+![dockersec demo](demo.gif)
+
 A fast, offline CLI tool that scans your Dockerfile and docker-compose.yml
 for security vulnerabilities and bad practices.
 
